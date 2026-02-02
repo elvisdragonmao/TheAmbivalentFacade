@@ -13,8 +13,7 @@ fastify.register(require("@fastify/static"), {
 const requireAuth = async (request, reply) => {
 	const token = request.cookies.admin_token;
 	if (token !== process.env.SESSION_SECRET) {
-		reply.code(401).send({ error: "Unauthorized" });
-		return;
+		return reply.code(401).send({ error: "Unauthorized" });
 	}
 };
 

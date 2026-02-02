@@ -2,20 +2,15 @@
 	"name": "the-ambivalent-facade",
 	"version": "1.0.0",
 	"description": "",
+	"keywords": [],
+	"license": "GPL-3.0-only",
+	"author": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "node src/server.js",
 		"dev": "node --watch src/server.js",
+		"format": "prettier --write .",
+		"start": "node src/server.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "GPL-3.0-only",
-	"packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264",
-	"devDependencies": {
-		"prettier": "^3.8.1",
-		"prettier-plugin-organize-imports": "^4.3.0",
-		"prettier-plugin-packagejson": "^3.0.0"
 	},
 	"dependencies": {
 		"@fastify/cookie": "^11.0.2",
@@ -26,5 +21,11 @@
 		"dotenv": "^17.2.3",
 		"ejs": "^4.0.1",
 		"fastify": "^5.7.2"
-	}
+	},
+	"devDependencies": {
+		"prettier": "^3.8.1",
+		"prettier-plugin-organize-imports": "^4.3.0",
+		"prettier-plugin-packagejson": "^3.0.0"
+	},
+	"packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264"
 }
