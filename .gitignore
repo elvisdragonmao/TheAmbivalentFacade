@@ -1,0 +1,11 @@
+# USE PNPM!!!
+package-lock.json
+yarn.lock
+bun.lockb
+
+.vscode
+
+node_modules
+
+data/
+.env

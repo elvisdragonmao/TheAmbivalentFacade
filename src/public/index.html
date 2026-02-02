@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitation</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+  <!-- Loading Screen -->
+  <div id="loading" class="loading">
+    <div class="loader"></div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div id="content" class="container" style="display: none;">
+    <div class="card">
+      <h1 id="pageTitle">Welcome</h1>
+
+      <!-- Invitation Content (shown when invited) -->
+      <div id="invitationContent" style="display: none;">
+        <div class="welcome-text">You're Invited!</div>
+        <div class="invitation-details">
+          <h2 id="guestName"></h2>
+          <div id="message" class="message"></div>
+        </div>
+      </div>
+
+      <!-- Default Content (shown when not invited) -->
+      <div id="defaultContent">
+        <p class="subtitle">This is an invitation platform</p>
+        <p class="info">Use a valid invitation link to view your personalized invitation.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get invite parameter from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteSlug = urlParams.get('invite');
+
+    const loadInvitation = async () => {
+      const loading = document.getElementById('loading');
+      const content = document.getElementById('content');
+
+      if (!inviteSlug) {
+        // No invite slug, show default content
+        loading.style.display = 'none';
+        content.style.display = 'flex';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/invitation/${inviteSlug}`);
+
+        if (response.ok) {
+          const invitation = await response.json();
+
+          // Update page title
+          document.title = `Invitation for ${invitation.name}`;
+
+          // Show invitation content
+          document.getElementById('guestName').textContent =
+            `Dear ${invitation.name} (${invitation.pronoun})`;
+          document.getElementById('message').textContent = invitation.message;
+          document.getElementById('invitationContent').style.display = 'block';
+          document.getElementById('defaultContent').style.display = 'none';
+        } else {
+          // Invitation not found, show default
+          console.log('Invitation not found');
+        }
+      } catch (error) {
+        console.error('Error loading invitation:', error);
+      } finally {
+        // Hide loading, show content
+        loading.style.display = 'none';
+        content.style.display = 'flex';
+      }
+    }
+
+    // Load invitation when page loads
+    loadInvitation();
+  </script>
+</body>
+
+</html>
