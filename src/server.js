@@ -61,13 +61,13 @@ fastify.get("/api/invitations/:id", { preHandler: requireAuth }, async (request,
 
 fastify.post("/api/invitations", { preHandler: requireAuth }, async (request, reply) => {
 	try {
-		const { name, pronoun, message, slug } = request.body;
+		const { name, pronoun, message, slug, inviteToParty } = request.body;
 
 		if (!name || !pronoun || !message) {
 			return reply.code(400).send({ error: "Name, pronoun, and message are required" });
 		}
 
-		const invitation = invitationDb.create({ name, pronoun, message, slug: slug || "" });
+		const invitation = invitationDb.create({ name, pronoun, message, slug: slug || "", inviteToParty });
 		return reply.code(201).send(invitation);
 	} catch (error) {
 		return reply.code(400).send({ error: error.message });
@@ -76,13 +76,13 @@ fastify.post("/api/invitations", { preHandler: requireAuth }, async (request, re
 
 fastify.put("/api/invitations/:id", { preHandler: requireAuth }, async (request, reply) => {
 	try {
-		const { name, pronoun, message, slug } = request.body;
+		const { name, pronoun, message, slug, inviteToParty } = request.body;
 
 		if (!name || !message || !slug) {
 			return reply.code(400).send({ error: "請填寫名稱、訊息和代碼" });
 		}
 
-		const success = invitationDb.update(request.params.id, { name, pronoun, message, slug });
+		const success = invitationDb.update(request.params.id, { name, pronoun, message, slug, inviteToParty });
 
 		if (!success) {
 			return reply.code(404).send({ error: "Invitation not found" });

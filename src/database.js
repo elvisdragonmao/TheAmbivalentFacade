@@ -18,12 +18,26 @@ db.exec(`
     name TEXT NOT NULL,
     pronoun TEXT NOT NULL,
     message TEXT NOT NULL,
+    inviteToParty INTEGER DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
   
   CREATE INDEX IF NOT EXISTS idx_slug ON invitations(slug);
 `);
+
+// Migration: Add inviteToParty column if it doesn't exist
+try {
+	const columns = db.prepare("PRAGMA table_info(invitations)").all();
+	const hasInviteToParty = columns.some(col => col.name === "inviteToParty");
+	
+	if (!hasInviteToParty) {
+		db.exec("ALTER TABLE invitations ADD COLUMN inviteToParty INTEGER DEFAULT 1");
+		console.log("Migration: Added inviteToParty column");
+	}
+} catch (error) {
+	console.error("Migration error:", error);
+}
 
 const generateSlug = () => {
 	const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -72,11 +86,12 @@ const invitationDb = {
 			}
 		}
 
-		const stmt = db.prepare("INSERT INTO invitations (slug, name, pronoun, message) VALUES (?, ?, ?, ?)");
+		const inviteToParty = data.inviteToParty !== undefined ? (data.inviteToParty ? 1 : 0) : 1;
+		const stmt = db.prepare("INSERT INTO invitations (slug, name, pronoun, message, inviteToParty) VALUES (?, ?, ?, ?, ?)");
 
 		try {
-			const result = stmt.run(slug, data.name, data.pronoun, data.message);
-			return { id: result.lastInsertRowid, slug, ...data };
+			const result = stmt.run(slug, data.name, data.pronoun, data.message, inviteToParty);
+			return { id: result.lastInsertRowid, slug, ...data, inviteToParty: Boolean(inviteToParty) };
 		} catch (error) {
 			if (error.message.includes("UNIQUE constraint failed")) {
 				throw new Error("Slug already exists");
@@ -87,10 +102,11 @@ const invitationDb = {
 
 	// Update invitation
 	update(id, data) {
-		const stmt = db.prepare("UPDATE invitations SET name = ?, pronoun = ?, message = ?, slug = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+		const inviteToParty = data.inviteToParty !== undefined ? (data.inviteToParty ? 1 : 0) : 1;
+		const stmt = db.prepare("UPDATE invitations SET name = ?, pronoun = ?, message = ?, slug = ?, inviteToParty = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
 
 		try {
-			const result = stmt.run(data.name, data.pronoun, data.message, data.slug, id);
+			const result = stmt.run(data.name, data.pronoun, data.message, data.slug, inviteToParty, id);
 			return result.changes > 0;
 		} catch (error) {
 			if (error.message.includes("UNIQUE constraint failed")) {
