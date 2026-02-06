@@ -6,7 +6,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>管理員介面 | 半嬌面</title>
 	<link rel="stylesheet" href="/admin.css" />
-	<link rel="stylesheet" href="index.css" />
 	<link rel="icon" type="image/png" href="/img/favicon/favicon-96x96.png" sizes="96x96" />
 	<link rel="icon" type="image/svg+xml" href="/img/favicon/favicon.svg" />
 	<link rel="shortcut icon" href="/img/favicon/favicon.ico" />
@@ -17,7 +16,10 @@
 <body>
 	<div class="admin-container">
 		<header class="admin-header">
-			<h1>邀請管理</h1>
+			<div class="header-left">
+				<a href="/" class="btn btn-secondary btn-small" style="text-decoration: none;">← 返回主頁</a>
+				<h1>邀請管理</h1>
+			</div>
 			<button class="btn btn-secondary" onclick="logout()">登出</button>
 		</header>
 
@@ -70,9 +72,9 @@
 					<small>僅限小寫字母和數字。留空則自動生成5位代碼。</small>
 				</div>
 
-				<div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+				<div class="form-group checkbox-group">
 					<input type="checkbox" id="inviteToParty" name="inviteToParty" checked />
-					<label for="inviteToParty" style="margin: 0;">邀請參加派對</label>
+					<label for="inviteToParty">邀請參加派對</label>
 				</div>
 
 				<div class="form-actions">
@@ -114,11 +116,15 @@
 
 			container.innerHTML = invitations
 				.map(
-					inv => `
+					inv => {
+						const partyStatus = inv.inviteToParty !== false 
+							? '<span class="party-status invited">🎉 派對</span>' 
+							: '<span class="party-status not-invited">❌ 不參加</span>';
+						return `
         <div class="invitation-item" data-id="${inv.id}">
           <div class="invitation-info">
             <h3>${inv.name} (${inv.pronoun})</h3>
-            <p class="slug">Slug: ${inv.slug} ${inv.inviteToParty !== false ? '🎉' : '❌'}</p>
+            <p class="slug">Slug: ${inv.slug} ${partyStatus}</p>
             <p class="message-preview">${inv.message.substring(0, 100)}${inv.message.length > 100 ? "..." : ""}</p>
           </div>
           <div class="invitation-actions">
@@ -130,7 +136,8 @@
             <button class="btn btn-small btn-danger" onclick="deleteInvitation(${inv.id})">🗑️ 刪除</button>
           </div>
         </div>
-      `
+      `;
+					}
 				)
 				.join("");
 		};
