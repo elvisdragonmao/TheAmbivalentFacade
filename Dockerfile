@@ -23,7 +23,6 @@ RUN pnpm install --frozen-lockfile --prod
 
 COPY backend ./backend
 COPY --from=frontend-builder /app/public ./public
-COPY data ./data
 
 RUN addgroup -g 1001 -S nodejs \
  && adduser -S nodejs -u 1001 \
