@@ -126,7 +126,7 @@ const submitRSVP = async () => {
 if (comeYesCheckbox && comeNoCheckbox) {
 	comeYesCheckbox.removeEventListener("change", comeYesCheckbox._changeHandler);
 	comeNoCheckbox.removeEventListener("change", comeNoCheckbox._changeHandler);
-	
+
 	comeYesCheckbox.addEventListener("change", function () {
 		if (this.checked) {
 			comeNoCheckbox.checked = false;
@@ -190,7 +190,7 @@ const init = async () => {
 		scrollHorizontally: true,
 		navigation: true,
 		navigationPosition: "right",
-		navigationTooltips: ["封面", "介紹", "藝術家", "展覽資訊", "邀請函", "Credits"],
+		navigationTooltips: ["", "封面", "介紹", "藝術家", "展覽資訊", "邀請函", "Credits"],
 		credits: {
 			enabled: false
 		},
@@ -213,27 +213,27 @@ const init = async () => {
 	L.marker([lat, lng]).addTo(map).bindPopup("台北市民生東路三段 113 巷 7 弄 10 號 B1").openPopup();
 
 	// 3D tilt effect for intro-poster
-	const introPoster = document.querySelector('.intro-poster');
+	const introPoster = document.querySelector(".intro-poster");
 	if (introPoster) {
-		document.addEventListener('mousemove', (e) => {
+		document.addEventListener("mousemove", e => {
 			// 獲取滑鼠位置相對於螢幕中心的百分比 (-1 到 1)
-			const xPos = (e.clientX / window.innerWidth) - 0.5;
-			const yPos = (e.clientY / window.innerHeight) - 0.5;
-			
+			const xPos = e.clientX / window.innerWidth - 0.5;
+			const yPos = e.clientY / window.innerHeight - 0.5;
+
 			// 設定最大旋轉角度
 			const maxRotate = 15; // 度數
-			
+
 			// 計算旋轉角度（反向，讓效果更自然）
 			const rotateY = xPos * maxRotate;
 			const rotateX = -yPos * maxRotate;
-			
+
 			// 應用 3D 變換
 			introPoster.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 		});
-		
+
 		// 滑鼠離開時恢復原狀
-		document.addEventListener('mouseleave', () => {
-			introPoster.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+		document.addEventListener("mouseleave", () => {
+			introPoster.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
 		});
 	}
 };

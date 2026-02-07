@@ -8,8 +8,7 @@
 
 body {
 	color: #eae0e0;
-	background: #a6a6a6;
-	min-height: 100vh;
+	background: #050505;
 	font-family: "hiragino-mincho-pron", serif;
 	font-weight: 300;
 }
@@ -33,6 +32,10 @@ main a {
 	position: relative;
 	cursor: pointer;
 	font-weight: 600;
+}
+
+main a.no::after {
+	display: none;
 }
 
 main a::after {
@@ -482,6 +485,37 @@ input[type="checkbox"]:checked + .checkbox::after {
 	to {
 		opacity: 1;
 	}
+}
+
+.welcome-section {
+	background: url("img/banner-bg.webp") center / cover no-repeat;
+}
+
+.banner-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	padding: 1rem;
+	font-size: 1.3rem;
+}
+
+.banner-arrow {
+	width: 2rem;
+	animation: point 0.5s linear infinite alternate;
+}
+
+@keyframes point {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(10px);
+	}
+}
+
+.banner-mail {
+	width: 2.5rem;
 }
 
 @media (max-aspect-ratio: 590 / 837) {
