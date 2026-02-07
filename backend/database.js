@@ -61,25 +61,38 @@ const generateSlug = () => {
 	return slug;
 };
 
+// Helper function to convert inviteToParty to boolean
+const convertInvitation = (inv) => {
+	if (!inv) return null;
+	return {
+		...inv,
+		inviteToParty: Boolean(inv.inviteToParty)
+	};
+};
+
+const convertInvitations = (invitations) => {
+	return invitations.map(convertInvitation);
+};
+
 // Database operations
 const invitationDb = {
 	// Get invitation by slug
 	getBySlug(slug) {
 		const stmt = db.prepare("SELECT * FROM invitations WHERE slug = ?");
-		return stmt.get(slug);
+		return convertInvitation(stmt.get(slug));
 	},
 
 	// Get all invitations
 	getAll() {
 		const stmt = db.prepare("SELECT * FROM invitations ORDER BY created_at DESC");
-		return stmt.all();
+		return convertInvitations(stmt.all());
 	},
 
 	// Search invitations
 	search(query) {
 		const stmt = db.prepare("SELECT * FROM invitations WHERE name LIKE ? OR slug LIKE ? ORDER BY created_at DESC");
 		const searchTerm = `%${query}%`;
-		return stmt.all(searchTerm, searchTerm);
+		return convertInvitations(stmt.all(searchTerm, searchTerm));
 	},
 
 	// Create invitation
@@ -139,7 +152,7 @@ const invitationDb = {
 	// Get invitation by ID
 	getById(id) {
 		const stmt = db.prepare("SELECT * FROM invitations WHERE id = ?");
-		return stmt.get(id);
+		return convertInvitation(stmt.get(id));
 	}
 };
 

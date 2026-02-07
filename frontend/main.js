@@ -45,10 +45,20 @@ const loadExistingRSVP = async () => {
 		const response = await fetch(`/api/rsvp/${inviteSlug}`);
 		if (response.ok) {
 			const rsvp = await response.json();
+			const statusDiv = document.getElementById("submitStatus");
+			
 			if (rsvp.response === "yes") {
 				comeYesCheckbox.checked = true;
+				if (statusDiv) {
+					statusDiv.textContent = "您已回覆將會出席 · 可隨時修改";
+					statusDiv.style.color = "#4CAF50";
+				}
 			} else if (rsvp.response === "no") {
 				comeNoCheckbox.checked = true;
+				if (statusDiv) {
+					statusDiv.textContent = "您已回覆無法前來 · 可隨時修改";
+					statusDiv.style.color = "#ff69b4";
+				}
 			}
 		}
 	} catch (error) {
@@ -97,12 +107,17 @@ const submitRSVP = async () => {
 		if (submitResponse.ok) {
 			// Show success message based on response
 			if (response === "yes") {
-				statusDiv.textContent = "期待當天與您相遇";
+				statusDiv.textContent = "期待當天與您相遇 · 可隨時修改回覆";
 				statusDiv.style.color = "#4CAF50";
 			} else {
-				statusDiv.textContent = "真可惜 展期若有空都歡迎前來觀展";
+				statusDiv.textContent = "真可惜 展期若有空都歡迎前來觀展 · 可隨時修改回覆";
 				statusDiv.style.color = "#ff69b4";
 			}
+			// Re-enable checkboxes after successful submission
+			setTimeout(() => {
+				comeYesCheckbox.disabled = false;
+				comeNoCheckbox.disabled = false;
+			}, 300);
 		} else {
 			statusDiv.textContent = "送出失敗，請稍後再試";
 			statusDiv.style.color = "#ff4444";
@@ -116,7 +131,6 @@ const submitRSVP = async () => {
 		// Re-enable checkboxes on error
 		comeYesCheckbox.disabled = false;
 		comeNoCheckbox.disabled = false;
-	} finally {
 	}
 };
 
@@ -184,11 +198,12 @@ const loadInvitation = async () => {
 
 			const messageElement = document.getElementById("message");
 			if (messageElement) {
+				// Preserve line breaks in message
 				messageElement.textContent = invitation.message;
 			}
 
-			// Show/hide party elements based on invited_to_party
-			if (invitation.invited_to_party) {
+			// Show/hide party elements based on inviteToParty
+			if (invitation.inviteToParty) {
 				if (agendaImg) agendaImg.style.display = "block";
 				if (invitationForm) invitationForm.style.display = "block";
 			} else {

@@ -124,7 +124,7 @@ header {
 
 .cover-img {
 	position: absolute;
-	height: 100%;
+	height: 90%;
 	--offset: 10%;
 	clip-path: polygon(0% 0%, 10% 0%, 100% 98%, 100% 100%, 85% 100%, 0% 3%, 0% 0%);
 	transition: filter 0.5s ease-out;
@@ -413,6 +413,7 @@ section:has(+ .active) .cover-layer1 {
 	flex-grow: 1;
 	color: #e7dbdb;
 	line-height: 2;
+	white-space: pre-line;
 }
 
 .invitation-subtitle {
@@ -516,6 +517,11 @@ input[type="checkbox"]:checked + .checkbox::after {
 
 .banner-mail {
 	width: 2.5rem;
+	transition: filter 0.3s ease-out;
+}
+
+.banner-mail:hover {
+	filter: invert(1);
 }
 
 @media (max-aspect-ratio: 590 / 837) {
