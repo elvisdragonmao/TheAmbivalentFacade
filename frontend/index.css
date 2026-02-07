@@ -220,6 +220,8 @@ section:has(+ .active) .cover-layer1 {
 
 .intro-poster {
 	height: 35rem;
+	transition: transform 0.2s ease-out;
+	transform-style: preserve-3d;
 }
 
 .intro-left {
@@ -277,6 +279,7 @@ section:has(+ .active) .cover-layer1 {
 .author-title {
 	font-size: 2rem;
 	font-weight: 600;
+	margin-bottom: 2rem;
 }
 
 .info {
