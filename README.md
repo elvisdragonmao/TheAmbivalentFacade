@@ -8,3 +8,7 @@
 - `SESSION_SECRET`: 會話加密密鑰
 - `PORT`: 伺服器埠號 (預設: 3000)
 - `HOST`: 伺服器主機 (預設: localhost)
+
+```
+pnpm --filter frontend build
+```

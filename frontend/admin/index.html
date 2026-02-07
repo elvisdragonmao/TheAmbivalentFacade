@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>管理員介面 | 半嬌面</title>
+		<link rel="stylesheet" href="/admin.css" />
+		<link rel="icon" type="image/png" href="/img/favicon/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/img/favicon/favicon.svg" />
+		<link rel="shortcut icon" href="/img/favicon/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png" />
+		<link rel="manifest" href="/img/favicon/site.webmanifest" />
+	</head>
+
+	<body>
+		<div class="admin-container">
+			<header class="admin-header">
+				<div class="header-left">
+					<a href="/" class="btn btn-secondary btn-small" style="text-decoration: none">← 返回主頁</a>
+					<h1>邀請管理</h1>
+				</div>
+				<button class="btn btn-secondary" onclick="logout()">登出</button>
+			</header>
+
+			<div class="admin-content">
+				<div class="controls">
+					<div class="search-bar">
+						<input type="text" id="searchInput" placeholder="使用名稱或代碼搜尋..." />
+					</div>
+					<div style="display: flex; gap: 8px">
+						<button class="btn btn-secondary" onclick="copyAllNames()" id="copyAllBtn">
+							<span class="btn-text">📋 複製全部名單</span>
+							<span class="btn-success" style="display: none">✓ 已複製</span>
+						</button>
+						<button class="btn btn-primary" onclick="showCreateModal()">+ 新增邀請</button>
+					</div>
+				</div>
+
+				<div class="invitations-list" id="invitationsList">
+					<p class="loading">載入邀請中...</p>
+				</div>
+
+				<!-- RSVP Section -->
+				<div style="margin-top: 48px">
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px">
+						<h2>回覆統計</h2>
+						<button class="btn btn-secondary" onclick="exportRSVPs()">📥 匯出回覆</button>
+					</div>
+					<div id="rsvpStats" style="display: flex; gap: 16px; margin-bottom: 24px">
+						<div style="padding: 16px; background: #f0f0f0; border-radius: 8px; flex: 1">
+							<div style="font-size: 24px; font-weight: bold" id="yesCount">0</div>
+							<div>將會出席</div>
+						</div>
+						<div style="padding: 16px; background: #f0f0f0; border-radius: 8px; flex: 1">
+							<div style="font-size: 24px; font-weight: bold" id="noCount">0</div>
+							<div>無法前來</div>
+						</div>
+						<div style="padding: 16px; background: #f0f0f0; border-radius: 8px; flex: 1">
+							<div style="font-size: 24px; font-weight: bold" id="noResponseCount">0</div>
+							<div>未回覆</div>
+						</div>
+					</div>
+					<div class="invitations-list" id="rsvpList">
+						<p class="loading">載入回覆中...</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Create/Edit Modal -->
+		<div id="invitationModal" class="modal">
+			<div class="modal-content">
+				<span class="close" onclick="closeModal()">&times;</span>
+				<h2 id="modalTitle">新增邀請</h2>
+				<form id="invitationForm">
+					<input type="hidden" id="invitationId" />
+
+					<div class="form-group">
+						<label for="name">名稱 *</label>
+						<input type="text" id="name" name="name" required />
+					</div>
+
+					<div class="form-group">
+						<label for="pronoun">代名詞</label>
+						<input type="text" id="pronoun" name="pronoun" placeholder="例如：先生／小姐／他／她" />
+					</div>
+
+					<div class="form-group">
+						<label for="message">邀請訊息 *</label>
+						<textarea id="message" name="message" rows="5" required></textarea>
+					</div>
+
+					<div class="form-group">
+						<label for="slug">自訂代碼（留空則自動生成）</label>
+						<input type="text" id="slug" name="slug" pattern="[a-z0-9]+" title="僅限小寫字母和數字" />
+						<small>僅限小寫字母和數字。留空則自動生成5位代碼。</small>
+					</div>
+
+					<div class="form-group checkbox-group">
+						<input type="checkbox" id="inviteToParty" name="inviteToParty" checked />
+						<label for="inviteToParty">邀請參加派對</label>
+					</div>
+
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary">儲存</button>
+						<button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script>
+			let currentInvitations = [];
+			let currentRSVPs = [];
+
+			const loadInvitations = async () => {
+				try {
+					const response = await fetch("/api/invitations");
+					if (!response.ok) {
+						if (response.status === 401) {
+							window.location.href = "/login";
+							return;
+						}
+						throw new Error("Failed to load invitations");
+					}
+					currentInvitations = await response.json();
+					renderInvitations(currentInvitations);
+				} catch (error) {
+					document.getElementById("invitationsList").innerHTML = '<p class="error">Error loading invitations</p>';
+				}
+			};
+
+			const renderInvitations = invitations => {
+				const container = document.getElementById("invitationsList");
+				const baseUrl = window.location.origin;
+
+				if (invitations.length === 0) {
+					container.innerHTML = '<p class="no-invitations">No invitations found.</p>';
+					return;
+				}
+
+				container.innerHTML = invitations
+					.map(inv => {
+						const partyStatus = inv.inviteToParty !== false ? '<span class="party-status invited">🎉 派對</span>' : '<span class="party-status not-invited">❌ 不參加</span>';
+						return `
+        <div class="invitation-item" data-id="${inv.id}">
+          <div class="invitation-info">
+            <h3>${inv.name} (${inv.pronoun})</h3>
+            <p class="slug">Slug: ${inv.slug} ${partyStatus}</p>
+            <p class="message-preview">${inv.message.substring(0, 100)}${inv.message.length > 100 ? "..." : ""}</p>
+          </div>
+          <div class="invitation-actions">
+            <button class="btn btn-small copy-btn" onclick="copyInviteLink('${baseUrl}/?invite=${inv.slug}', this)">
+              <span class="btn-text">📋 複製</span>
+              <span class="btn-success" style="display: none;">✓ 已複製</span>
+            </button>
+            <button class="btn btn-small" onclick="editInvitation(${inv.id})">✏️ 編輯</button>
+            <button class="btn btn-small btn-danger" onclick="deleteInvitation(${inv.id})">🗑️ 刪除</button>
+          </div>
+        </div>
+      `;
+					})
+					.join("");
+			};
+
+			// Search functionality
+			document.getElementById("searchInput").addEventListener("input", async e => {
+				const query = e.target.value;
+
+				if (query.length === 0) {
+					renderInvitations(currentInvitations);
+					return;
+				}
+
+				try {
+					const response = await fetch(`/api/invitations?search=${encodeURIComponent(query)}`);
+					const invitations = await response.json();
+					renderInvitations(invitations);
+				} catch (error) {
+					console.error("搜尋邀請時出錯：", error);
+				}
+			});
+
+			const showCreateModal = () => {
+				document.getElementById("modalTitle").textContent = "新增邀請";
+				document.getElementById("invitationForm").reset();
+				document.getElementById("invitationId").value = "";
+				document.getElementById("invitationModal").style.display = "block";
+			};
+
+			const closeModal = () => {
+				document.getElementById("invitationModal").style.display = "none";
+			};
+
+			const editInvitation = async id => {
+				try {
+					const response = await fetch(`/api/invitations/${id}`);
+					const invitation = await response.json();
+
+					document.getElementById("modalTitle").textContent = "Edit Invitation";
+					document.getElementById("invitationId").value = invitation.id;
+					document.getElementById("name").value = invitation.name;
+					document.getElementById("pronoun").value = invitation.pronoun;
+					document.getElementById("message").value = invitation.message;
+					document.getElementById("slug").value = invitation.slug;
+					document.getElementById("inviteToParty").checked = invitation.inviteToParty !== false;
+					document.getElementById("invitationModal").style.display = "block";
+				} catch (error) {
+					alert("Error loading invitation");
+				}
+			};
+
+			const deleteInvitation = async id => {
+				if (!confirm("Are you sure you want to delete this invitation?")) {
+					return;
+				}
+
+				try {
+					const response = await fetch(`/api/invitations/${id}`, {
+						method: "DELETE"
+					});
+
+					if (response.ok) {
+						loadInvitations();
+					} else {
+						alert("Error deleting invitation");
+					}
+				} catch (error) {
+					alert("Error deleting invitation");
+				}
+			};
+
+			const copyInviteLink = (url, button) => {
+				navigator.clipboard
+					.writeText(url)
+					.then(() => {
+						const btnText = button.querySelector(".btn-text");
+						const btnSuccess = button.querySelector(".btn-success");
+
+						// Hide text, show checkmark
+						btnText.style.display = "none";
+						btnSuccess.style.display = "inline";
+						button.classList.add("btn-copied");
+
+						// Reset after 2 seconds
+						setTimeout(() => {
+							btnText.style.display = "inline";
+							btnSuccess.style.display = "none";
+							button.classList.remove("btn-copied");
+						}, 2000);
+					})
+					.catch(() => {
+						prompt("Copy this link:", url);
+					});
+			};
+
+			const logout = async () => {
+				try {
+					await fetch("/api/admin/logout", { method: "POST" });
+					window.location.href = "/login";
+				} catch (error) {
+					window.location.href = "/login";
+				}
+			};
+
+			const copyAllNames = () => {
+				if (currentInvitations.length === 0) {
+					alert("無邀請名單");
+					return;
+				}
+
+				const namesList = currentInvitations
+					.map(inv => {
+						const pronoun = inv.pronoun ? ` (${inv.pronoun})` : "";
+						return `${inv.name}${pronoun}`;
+					})
+					.join("\n");
+
+				navigator.clipboard
+					.writeText(namesList)
+					.then(() => {
+						const button = document.getElementById("copyAllBtn");
+						const btnText = button.querySelector(".btn-text");
+						const btnSuccess = button.querySelector(".btn-success");
+
+						// Hide text, show checkmark
+						btnText.style.display = "none";
+						btnSuccess.style.display = "inline";
+						button.classList.add("btn-copied");
+
+						// Reset after 2 seconds
+						setTimeout(() => {
+							btnText.style.display = "inline";
+							btnSuccess.style.display = "none";
+							button.classList.remove("btn-copied");
+						}, 2000);
+					})
+					.catch(() => {
+						prompt("複製此名單:", namesList);
+					});
+			};
+
+			// Form submission
+			document.getElementById("invitationForm").addEventListener("submit", async e => {
+				e.preventDefault();
+
+				const id = document.getElementById("invitationId").value;
+				const data = {
+					name: document.getElementById("name").value,
+					pronoun: document.getElementById("pronoun").value,
+					message: document.getElementById("message").value,
+					slug: document.getElementById("slug").value,
+					inviteToParty: document.getElementById("inviteToParty").checked
+				};
+
+				try {
+					const url = id ? `/api/invitations/${id}` : "/api/invitations";
+					const method = id ? "PUT" : "POST";
+
+					const response = await fetch(url, {
+						method,
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(data)
+					});
+
+					if (response.ok) {
+						closeModal();
+						loadInvitations();
+					} else {
+						const error = await response.json();
+						alert(`Error: ${error.error}`);
+					}
+				} catch (error) {
+					alert("Error saving invitation");
+				}
+			});
+
+			// Close modal when clicking outside
+			window.onclick = event => {
+				const modal = document.getElementById("invitationModal");
+				if (event.target === modal) {
+					closeModal();
+				}
+			};
+
+			// Load RSVP responses
+			const loadRSVPs = async () => {
+				try {
+					const response = await fetch("/api/rsvps");
+					if (!response.ok) {
+						throw new Error("Failed to load RSVPs");
+					}
+					currentRSVPs = await response.json();
+					renderRSVPs(currentRSVPs);
+					updateRSVPStats();
+				} catch (error) {
+					document.getElementById("rsvpList").innerHTML = '<p class="error">Error loading RSVPs</p>';
+				}
+			};
+
+			const renderRSVPs = rsvps => {
+				const container = document.getElementById("rsvpList");
+
+				if (rsvps.length === 0) {
+					container.innerHTML = '<p class="no-invitations">尚無回覆</p>';
+					return;
+				}
+
+				container.innerHTML = rsvps
+					.map(rsvp => {
+						const responseText = rsvp.response === "yes" ? '<span style="color: #4CAF50; font-weight: bold;">✓ 將出席</span>' : '<span style="color: #ff69b4; font-weight: bold;">✗ 無法前來</span>';
+						const invitationName = rsvp.invitation_name || "未知";
+						const pronoun = rsvp.invitation_pronoun ? ` (${rsvp.invitation_pronoun})` : "";
+						return `
+						<div class="invitation-item">
+							<div class="invitation-info">
+								<h3>${invitationName}${pronoun}</h3>
+								<p class="slug">Slug: ${rsvp.slug} | ${responseText}</p>
+								<p style="font-size: 12px; color: #666;">回覆時間: ${new Date(rsvp.updated_at).toLocaleString("zh-TW")}</p>
+							</div>
+						</div>
+					`;
+					})
+					.join("");
+			};
+
+			const updateRSVPStats = () => {
+				const totalInvitations = currentInvitations.length;
+				const yesResponses = currentRSVPs.filter(r => r.response === "yes").length;
+				const noResponses = currentRSVPs.filter(r => r.response === "no").length;
+				const noResponse = totalInvitations - currentRSVPs.length;
+
+				document.getElementById("yesCount").textContent = yesResponses;
+				document.getElementById("noCount").textContent = noResponses;
+				document.getElementById("noResponseCount").textContent = noResponse;
+			};
+
+			const exportRSVPs = () => {
+				if (currentRSVPs.length === 0) {
+					alert("無回覆可匯出");
+					return;
+				}
+
+				// Create CSV content
+				const csvRows = [["名稱", "代名詞", "Slug", "回覆", "回覆時間"].join(",")];
+
+				currentRSVPs.forEach(rsvp => {
+					const name = rsvp.invitation_name || "未知";
+					const pronoun = rsvp.invitation_pronoun || "";
+					const response = rsvp.response === "yes" ? "將出席" : "無法前來";
+					const time = new Date(rsvp.updated_at).toLocaleString("zh-TW");
+					csvRows.push([name, pronoun, rsvp.slug, response, time].join(","));
+				});
+
+				const csvContent = csvRows.join("\n");
+				const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+				const link = document.createElement("a");
+				const url = URL.createObjectURL(blob);
+
+				link.setAttribute("href", url);
+				link.setAttribute("download", `rsvp_responses_${new Date().toISOString().split("T")[0]}.csv`);
+				link.style.visibility = "hidden";
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+			};
+
+			// Load invitations on page load
+			loadInvitations();
+			loadRSVPs();
+		</script>
+	</body>
+</html>

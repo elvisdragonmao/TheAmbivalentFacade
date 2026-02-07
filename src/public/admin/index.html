@@ -40,6 +40,31 @@
 			<div class="invitations-list" id="invitationsList">
 				<p class="loading">載入邀請中...</p>
 			</div>
+
+			<!-- RSVP Section -->
+			<div style="margin-top: 48px;">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+					<h2>回覆統計</h2>
+					<button class="btn btn-secondary" onclick="exportRSVPs()">📥 匯出回覆</button>
+				</div>
+				<div id="rsvpStats" style="display: flex; gap: 16px; margin-bottom: 24px;">
+					<div style="padding: 16px; background: #f0f0f0; border-radius: 8px; flex: 1;">
+						<div style="font-size: 24px; font-weight: bold;" id="yesCount">0</div>
+						<div>將會出席</div>
+					</div>
+					<div style="padding: 16px; background: #f0f0f0; border-radius: 8px; flex: 1;">
+						<div style="font-size: 24px; font-weight: bold;" id="noCount">0</div>
+						<div>無法前來</div>
+					</div>
+					<div style="padding: 16px; background: #f0f0f0; border-radius: 8px; flex: 1;">
+						<div style="font-size: 24px; font-weight: bold;" id="noResponseCount">0</div>
+						<div>未回覆</div>
+					</div>
+				</div>
+				<div class="invitations-list" id="rsvpList">
+					<p class="loading">載入回覆中...</p>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -87,6 +112,7 @@
 
 	<script>
 		let currentInvitations = [];
+		let currentRSVPs = [];
 
 		const loadInvitations = async () => {
 			try {
@@ -324,8 +350,95 @@
 			}
 		};
 
+		// Load RSVP responses
+		const loadRSVPs = async () => {
+			try {
+				const response = await fetch("/api/rsvps");
+				if (!response.ok) {
+					throw new Error("Failed to load RSVPs");
+				}
+				currentRSVPs = await response.json();
+				renderRSVPs(currentRSVPs);
+				updateRSVPStats();
+			} catch (error) {
+				document.getElementById("rsvpList").innerHTML = '<p class="error">Error loading RSVPs</p>';
+			}
+		};
+
+		const renderRSVPs = (rsvps) => {
+			const container = document.getElementById("rsvpList");
+
+			if (rsvps.length === 0) {
+				container.innerHTML = '<p class="no-invitations">尚無回覆</p>';
+				return;
+			}
+
+			container.innerHTML = rsvps
+				.map(rsvp => {
+					const responseText = rsvp.response === "yes" 
+						? '<span style="color: #4CAF50; font-weight: bold;">✓ 將出席</span>' 
+						: '<span style="color: #ff69b4; font-weight: bold;">✗ 無法前來</span>';
+					const invitationName = rsvp.invitation_name || "未知";
+					const pronoun = rsvp.invitation_pronoun ? ` (${rsvp.invitation_pronoun})` : "";
+					return `
+						<div class="invitation-item">
+							<div class="invitation-info">
+								<h3>${invitationName}${pronoun}</h3>
+								<p class="slug">Slug: ${rsvp.slug} | ${responseText}</p>
+								<p style="font-size: 12px; color: #666;">回覆時間: ${new Date(rsvp.updated_at).toLocaleString('zh-TW')}</p>
+							</div>
+						</div>
+					`;
+				})
+				.join("");
+		};
+
+		const updateRSVPStats = () => {
+			const totalInvitations = currentInvitations.length;
+			const yesResponses = currentRSVPs.filter(r => r.response === "yes").length;
+			const noResponses = currentRSVPs.filter(r => r.response === "no").length;
+			const noResponse = totalInvitations - currentRSVPs.length;
+
+			document.getElementById("yesCount").textContent = yesResponses;
+			document.getElementById("noCount").textContent = noResponses;
+			document.getElementById("noResponseCount").textContent = noResponse;
+		};
+
+		const exportRSVPs = () => {
+			if (currentRSVPs.length === 0) {
+				alert("無回覆可匯出");
+				return;
+			}
+
+			// Create CSV content
+			const csvRows = [
+				["名稱", "代名詞", "Slug", "回覆", "回覆時間"].join(",")
+			];
+
+			currentRSVPs.forEach(rsvp => {
+				const name = rsvp.invitation_name || "未知";
+				const pronoun = rsvp.invitation_pronoun || "";
+				const response = rsvp.response === "yes" ? "將出席" : "無法前來";
+				const time = new Date(rsvp.updated_at).toLocaleString('zh-TW');
+				csvRows.push([name, pronoun, rsvp.slug, response, time].join(","));
+			});
+
+			const csvContent = csvRows.join("\n");
+			const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+			const link = document.createElement("a");
+			const url = URL.createObjectURL(blob);
+			
+			link.setAttribute("href", url);
+			link.setAttribute("download", `rsvp_responses_${new Date().toISOString().split('T')[0]}.csv`);
+			link.style.visibility = 'hidden';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		};
+
 		// Load invitations on page load
 		loadInvitations();
+		loadRSVPs();
 	</script>
 </body>
 

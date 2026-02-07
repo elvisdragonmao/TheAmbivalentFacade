@@ -121,11 +121,16 @@
             <img src="img/invitation-agenda.png" class="invitation-agenda"
               alt="3/7（六）畫展前一日私密預展。15:30 開放入場、18:00-19:00 音樂演出、19:30 閉館。現場備有美式漢堡與精選酒飲">
             <div class="invitation-form">
-              <label for="come-yes"><input type="checkbox" id="come-yes">
+              <label for="come-yes" class="checkbox-label">
+                <input type="checkbox" id="come-yes" class="form-checkbox">
                 <div class="checkbox"></div>3/7 私密預展（出席）
               </label>
-              <label for="come-no"><input type="checkbox" id="come-no">
-                <div class="checkbox"></div><label for="come-no">此次無法前來</label>
+              <label for="come-no" class="checkbox-label">
+                <input type="checkbox" id="come-no" class="form-checkbox">
+                <div class="checkbox"></div>此次無法前來
+              </label>
+              <button id="submitBtn" class="submit-btn" style="margin-top: 16px; padding: 12px 24px; background: #ff69b4; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; width: 100%;">送出回覆</button>
+              <div id="submitStatus" style="margin-top: 12px; text-align: center; min-height: 24px; font-size: 14px;"></div>
             </div>
           </div>
         </section>
@@ -149,6 +154,102 @@
     const inviteSlug = urlParams.get("invite");
 
     document.getElementById("invitationContent").style.display = "block";
+
+    // Checkbox mutual exclusion (radio button behavior)
+    const comeYesCheckbox = document.getElementById("come-yes");
+    const comeNoCheckbox = document.getElementById("come-no");
+    
+    if (comeYesCheckbox && comeNoCheckbox) {
+      comeYesCheckbox.addEventListener("change", function() {
+        if (this.checked) {
+          comeNoCheckbox.checked = false;
+        }
+      });
+
+      comeNoCheckbox.addEventListener("change", function() {
+        if (this.checked) {
+          comeYesCheckbox.checked = false;
+        }
+      });
+    }
+
+    // Load existing RSVP if available
+    const loadExistingRSVP = async () => {
+      if (!inviteSlug) return;
+      
+      try {
+        const response = await fetch(`/api/rsvp/${inviteSlug}`);
+        if (response.ok) {
+          const rsvp = await response.json();
+          if (rsvp.response === "yes") {
+            comeYesCheckbox.checked = true;
+          } else if (rsvp.response === "no") {
+            comeNoCheckbox.checked = true;
+          }
+        }
+      } catch (error) {
+        console.log("No existing RSVP found");
+      }
+    };
+
+    // Handle form submission
+    const submitBtn = document.getElementById("submitBtn");
+    const statusDiv = document.getElementById("submitStatus");
+
+    if (submitBtn) {
+      submitBtn.addEventListener("click", async function() {
+        if (!inviteSlug) {
+          statusDiv.textContent = "無效的邀請連結";
+          statusDiv.style.color = "#ff4444";
+          return;
+        }
+
+        const response = comeYesCheckbox.checked ? "yes" : (comeNoCheckbox.checked ? "no" : null);
+        
+        if (!response) {
+          statusDiv.textContent = "請選擇一個選項";
+          statusDiv.style.color = "#ff4444";
+          return;
+        }
+
+        // Show submitting message
+        statusDiv.textContent = "送出中...";
+        statusDiv.style.color = "#666";
+        submitBtn.disabled = true;
+
+        try {
+          const submitResponse = await fetch("/api/rsvp", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              slug: inviteSlug,
+              response: response
+            })
+          });
+
+          if (submitResponse.ok) {
+            // Show success message based on response
+            if (response === "yes") {
+              statusDiv.textContent = "期待當天與您相遇";
+              statusDiv.style.color = "#4CAF50";
+            } else {
+              statusDiv.textContent = "真可惜 展期若有空都歡迎前來觀展";
+              statusDiv.style.color = "#ff69b4";
+            }
+          } else {
+            statusDiv.textContent = "送出失敗，請稍後再試";
+            statusDiv.style.color = "#ff4444";
+          }
+        } catch (error) {
+          statusDiv.textContent = "送出失敗，請稍後再試";
+          statusDiv.style.color = "#ff4444";
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    }
 
     const loadInvitation = async () => {
       const loading = document.getElementById("loading");
@@ -189,6 +290,7 @@
 
     const init = async () => {
       await loadInvitation();
+      await loadExistingRSVP();
       new fullpage("#fullpage", {
         anchors: ['cover', 'intro', 'author', 'info', 'invite', 'footer'],
         licenseKey: "O46NH-O2JJ9-B3K9J-4C9JK-XSZZO",

@@ -342,6 +342,12 @@ header {
 	flex-shrink: 1;
 }
 
+@media (max-width: 800px) {
+	.invitation-left {
+		max-width: 100%;
+	}
+}
+
 #message {
 	flex-grow: 1;
 	color: #e7dbdb;
@@ -354,7 +360,7 @@ header {
 
 .invitation-agenda {
 	width: 20rem;
-	margin-bottom: 3rem;
+	margin-bottom: 4rem;
 }
 
 .invitation-section {

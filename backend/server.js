@@ -6,7 +6,7 @@ const { invitationDb, rsvpDb } = require("./database");
 fastify.register(require("@fastify/cookie"));
 fastify.register(require("@fastify/formbody"));
 fastify.register(require("@fastify/static"), {
-	root: path.join(__dirname, "public"),
+	root: path.join(__dirname, "../public"),
 	prefix: "/"
 });
 
