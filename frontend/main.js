@@ -46,7 +46,7 @@ const loadExistingRSVP = async () => {
 		if (response.ok) {
 			const rsvp = await response.json();
 			const statusDiv = document.getElementById("submitStatus");
-			
+
 			if (rsvp.response === "yes") {
 				comeYesCheckbox.checked = true;
 				if (statusDiv) {
@@ -231,6 +231,23 @@ const init = async () => {
 	await loadInvitation();
 	await loadExistingRSVP();
 
+	// Play background music
+	const bgMusic = document.getElementById("bgMusic");
+	if (bgMusic) {
+		// Try to play music (may be blocked by browser autoplay policy)
+		bgMusic.play().catch(error => {
+			console.log("Autoplay was prevented. Music will play on user interaction.");
+			// Play on first user interaction
+			const playOnInteraction = () => {
+				bgMusic.play();
+				document.removeEventListener("click", playOnInteraction);
+				document.removeEventListener("touchstart", playOnInteraction);
+			};
+			document.addEventListener("click", playOnInteraction);
+			document.addEventListener("touchstart", playOnInteraction);
+		});
+	}
+
 	new fullpage("#fullpage", {
 		anchors: ["cover", "intro", "author", "info", "invite", "footer"],
 		licenseKey: "O46NH-O2JJ9-B3K9J-4C9JK-XSZZO",
@@ -283,6 +300,47 @@ const init = async () => {
 		// 滑鼠離開時恢復原狀
 		document.addEventListener("mouseleave", () => {
 			introPoster.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+		});
+	}
+
+	// Share button functionality
+	const shareBtn = document.getElementById("shareBtn");
+	if (shareBtn) {
+		shareBtn.addEventListener("click", async () => {
+			try {
+				// Fetch the image as a blob
+				const response = await fetch("/img/poster-1.webp");
+				const blob = await response.blob();
+				const file = new File([blob], "半嬌面_海報.jpg", {
+					type: "image/jpeg",
+					lastModified: Date.now()
+				});
+
+				// Check if Web Share API is supported with files
+				if (navigator.canShare && navigator.canShare({ files: [file] })) {
+					await navigator.share({
+						files: [file],
+						title: "半嬌面 The Ambivalent Facade",
+						text: "桃粉中掘出一攤幸福 半嚮往 半遺棄\n黃聿謙個展\n2026/03/08 - 2026/03/22"
+					});
+				} else if (navigator.share) {
+					// Fallback: share URL if image sharing not supported
+					const shareUrl = window.location.origin;
+					await navigator.share({
+						title: "半嬌面 The Ambivalent Facade",
+						text: "桃粉中掘出一攤幸福 半嚮往 半遺棄\n黃聿謙個展\n2026/03/08 - 2026/03/22",
+						url: shareUrl
+					});
+				} else {
+					// No share API support
+					alert("您的瀏覽器不支援分享功能，建議手動長按圖片儲存後分享。");
+				}
+			} catch (error) {
+				console.error("分享失敗:", error);
+				if (error.name !== "AbortError") {
+					console.log("分享失敗，請稍後再試");
+				}
+			}
 		});
 	}
 };

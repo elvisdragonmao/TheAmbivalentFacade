@@ -137,11 +137,30 @@ header {
 
 .cover-layer {
 	position: absolute;
-	height: 141.55%;
+	height: 141.55vw;
 	width: 100%;
 	left: 0;
-	top: -10%;
+	top: -70%;
 	object-fit: cover;
+}
+
+@media (max-aspect-ratio: 1172 / 837) {
+	.cover-layer {
+		top: -50%;
+	}
+}
+
+@media (max-aspect-ratio: 1028 / 837) {
+	.cover-layer {
+		top: -50%;
+	}
+}
+
+@media (max-aspect-ratio: 950 / 837) {
+	.cover-layer {
+		top: 0%;
+		height: 120%;
+	}
 }
 
 .cover-layer1 {
@@ -149,7 +168,7 @@ header {
 }
 
 section:has(+ .active) .cover-layer1 {
-	transform: translateY(-20%);
+	transform: translateY(-15%);
 }
 
 .cover-layer2 {
@@ -248,6 +267,24 @@ section:has(+ .active) .cover-layer1 {
 	transform-style: preserve-3d;
 }
 
+.share-button {
+	color: #eae0e0;
+	font-family: inherit;
+	cursor: pointer;
+	background-color: transparent;
+	border: none;
+	padding: 0.5rem 2rem;
+	font-size: 1rem;
+}
+
+.share-button:hover {
+	text-decoration: underline;
+}
+
+.share-button:active {
+	transform: translateY(0);
+}
+
 .intro-left {
 	max-width: 40rem;
 }
@@ -289,6 +326,11 @@ section:has(+ .active) .cover-layer1 {
 .author-front {
 	margin: -3rem 0 0 12rem;
 	height: 40vh;
+}
+.author-ig a img {
+	margin-top: 1rem;
+	margin-left: auto;
+	display: block;
 }
 
 .author-s-container {
@@ -506,6 +548,11 @@ input[type="checkbox"]:checked + .checkbox::after {
 	animation: point 0.5s linear infinite alternate;
 }
 
+footer {
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
 @keyframes point {
 	from {
 		transform: translateX(0);
@@ -524,11 +571,11 @@ input[type="checkbox"]:checked + .checkbox::after {
 	filter: invert(1);
 }
 
-@media (max-aspect-ratio: 590 / 837) {
-	.cover-layer2 {
-		background-size: cover;
-	}
+#bgMusic {
+	display: none;
+}
 
+@media (max-aspect-ratio: 590 / 837) {
 	.cover-img {
 		height: unset;
 	}
@@ -565,6 +612,11 @@ input[type="checkbox"]:checked + .checkbox::after {
 	.intro-poster {
 		width: 100%;
 		height: unset;
+	}
+
+	.share-button {
+		width: 100%;
+		max-width: 200px;
 	}
 
 	.author-front {

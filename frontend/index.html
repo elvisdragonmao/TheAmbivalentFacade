@@ -44,6 +44,11 @@
 	</head>
 
 	<body>
+		<!-- Background Music -->
+		<audio id="bgMusic" loop>
+			<source src="/img/絆跤麵.mp3" type="audio/mpeg" />
+		</audio>
+
 		<!-- Loading Screen -->
 		<div id="loading" class="loading">
 			<div class="loader"></div>
@@ -53,7 +58,7 @@
 		<!-- Main Content -->
 		<main style="display: none">
 			<div id="fullpage">
-				<div class="section welcome-section fp-auto-height" data-anchor="welcome" id="welcome-section" style="display: none;">
+				<div class="section welcome-section fp-auto-height" data-anchor="welcome" id="welcome-section" style="display: none">
 					<div class="banner-container">
 						<div id="welcometext"></div>
 						<img src="img/banner-arrow.png" alt="" class="banner-arrow" />
@@ -96,7 +101,10 @@
 							<p>展出作品横跨了藝術家長達一年的心路歷程，依循著內在成長的軌跡推展。從情感關係中的投射與困惑；到個體在群體中的出格與排他、自負與隨後的自我校正；最終收束於狂想後的沈澱與靜觀。</p>
 							<p>《半嬌面》不僅是對個人私密情感的揭露，更是一場關於主體建構的演辣。從迷茫的渴愛到站穩自我，展覽試圖在這些未完成的「半」面相中，捕捉那段最為躁動、脆弱，卻也最為真實的蛻愛時光</p>
 						</div>
-						<img src="img/poster-1.webp" alt="" class="intro-poster" />
+						<div style="display: flex; flex-direction: column; align-items: center; gap: 12px">
+							<img src="img/poster-1.webp" alt="" class="intro-poster" />
+							<button id="shareBtn" class="share-button">[ 分享 ]</button>
+						</div>
 					</section>
 				</div>
 				<div class="section author-section" data-anchor="author">
@@ -119,6 +127,9 @@
 								<p>「赤裸與違心」你想過文字是什麼顏色的嗎？</p>
 								<p>赤裸與違心都是紅色的；赤裸與違心是赭紅與粉紅，至於果敢是桃紅色的—傻英雄般的果敢；我一直是傻英雄。</p>
 								<p>我的第一次個展《半嬌面》正處於發酵中。</p>
+								<div class="author-ig">
+									<a href="https://www.instagram.com/miaomiaonj/"><img src="img/icon/instagram.svg" alt="Instagram" /></a>
+								</div>
 							</div>
 						</section>
 					</div>
@@ -132,12 +143,12 @@
 							2026/03/08 - 2026/03/22 10:00 - 20:00
 							<br />
 							展覽地點：
-							<a href="https://maps.app.goo.gl/Mg9faR6c9zTN3rj57">台北市民生東路三段 113 巷 7 弄 10 號地下一樓</a>
+							<a href="https://maps.app.goo.gl/Mg9faR6c9zTN3rj57">誠空間（台北市民生東路三段 113 巷 7 弄 10 號地下一樓）</a>
 						</p>
 						<div id="map"></div>
 					</section>
 				</div>
-				<div class="section" data-anchor="invite" id="invitationContent" style="display: none;">
+				<div class="section" data-anchor="invite" id="invitationContent" style="display: none">
 					<section class="center-section invitation-section">
 						<div class="invitation-left">
 							<h2>
@@ -148,8 +159,13 @@
 							<img src="img/cover-subtitle.png" alt="桃粉中掘出一攤幸福 半嚮往 半遺棄 黃聿謙個展" class="invitation-subtitle" />
 						</div>
 						<div class="invitation-right">
-						<img id="invitation-agenda" src="img/invitation-agenda.png" class="invitation-agenda" alt="3/7（六）畫展前一日私密預展。15:30 開放入場、18:00-19:00 音樂演出、19:30 閉館。現場備有美式漢堡與精選酒飲" />
-						<div id="invitation-form" class="invitation-form">
+							<img
+								id="invitation-agenda"
+								src="img/invitation-agenda.png"
+								class="invitation-agenda"
+								alt="3/7（六）畫展前一日私密預展。15:30 開放入場、18:00-19:00 音樂演出、19:30 閉館。現場備有美式漢堡與精選酒飲"
+							/>
+							<div id="invitation-form" class="invitation-form">
 								<label for="come-yes" class="checkbox-label">
 									<input type="checkbox" id="come-yes" class="form-checkbox" />
 									<div class="checkbox"></div>
