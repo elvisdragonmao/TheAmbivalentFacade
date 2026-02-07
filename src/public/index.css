@@ -1,8 +1,50 @@
+:root {
+	--max-width: 1200px;
+}
+
 body {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-	color: #fff;
-	background: #000;
+	color: #eae0e0;
+	background: #a6a6a6;
 	min-height: 100vh;
+	font-family: "hiragino-mincho-pron", serif;
+	font-weight: 300;
+}
+
+body #fp-nav ul li .fp-tooltip {
+	font: inherit;
+}
+
+img {
+	display: block;
+}
+
+p {
+	font-size: 17px;
+	line-height: 1.6;
+}
+
+main a {
+	color: inherit;
+	text-decoration: none;
+	position: relative;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+main a::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -2px;
+	width: 100%;
+	height: 1px;
+	background-color: #eae0e0;
+	transform: scaleX(0);
+	transition: transform 0.3s ease-out;
+}
+
+main a:hover::after {
+	transform: scaleX(1);
 }
 
 .loading {
@@ -28,13 +70,335 @@ body {
 	animation: spin 0.8s linear infinite;
 }
 
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
 .loading p {
 	margin-top: 20px;
 	color: #666;
 	font-size: 14px;
 }
-@keyframes spin {
-	to {
-		transform: rotate(360deg);
+
+#invitationContent {
+	display: none;
+}
+
+header {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	min-height: 100svh;
+}
+
+.cover {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 2rem;
+	height: 0px;
+	/* min-height: 200px; */
+	background-color: #c492b4;
+	background: url("img/bg.webp") center 10% / cover no-repeat;
+	background-attachment: fixed;
+	position: relative;
+	overflow: hidden;
+}
+
+.cover-img {
+	position: absolute;
+	height: calc(100% - 2rem);
+	--offset: 10%;
+	clip-path: polygon(0% 0%, 10% 0%, 100% 98%, 100% 100%, 85% 100%, 0% 3%, 0% 0%);
+	transition: filter 0.5s ease-out;
+	cursor: pointer;
+}
+
+.cover-img img {
+	height: 100%;
+}
+
+.cover-layer {
+	position: absolute;
+	height: 141.55%;
+	width: 100%;
+	left: 0;
+	top: -10%;
+	object-fit: cover;
+}
+
+.cover-layer2 {
+	height: 273%;
+	background: url("img/cover-layer2.webp");
+	background-size: 100% 50%;
+	animation: scroll 10s linear infinite;
+}
+
+@keyframes scroll {
+	0% {
+		transform: translateY(0);
 	}
+	100% {
+		transform: translateY(-50%);
+	}
+}
+
+@media (max-aspect-ratio: 1) {
+	.cover-img {
+		position: absolute;
+		width: calc(100% - 2rem);
+		height: unset;
+	}
+
+	.cover-img img {
+		height: unset;
+		width: 100%;
+	}
+}
+
+.cover-img:hover {
+	filter: invert(1);
+}
+
+.header-info {
+	padding: 1rem 1rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	background-color: #141514;
+}
+
+.header-subtitle {
+	width: 47vw;
+}
+
+.header-location {
+	display: flex;
+	gap: 0.5em;
+	font-size: 1.7vw;
+	color: #d497bd;
+}
+
+.header-date {
+	margin-left: auto;
+	width: 20vw;
+	margin-bottom: 1.5vh;
+}
+
+.intro-section {
+	background: linear-gradient(#361512, #030504);
+}
+
+.center-section {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	max-width: var(--max-width);
+	margin: auto;
+	gap: 4rem;
+	padding: 2rem;
+	flex-wrap: wrap;
+}
+
+.intro-poster {
+	height: 35rem;
+}
+
+.intro-left {
+	max-width: 40rem;
+}
+
+.intro h2 {
+	font-size: 1.5rem;
+	color: #604d4d;
+	margin: 0 0 0.7rem 0;
+}
+
+.intro-title {
+	font-size: 4rem;
+	font-weight: 600;
+	margin-left: -0.3em;
+}
+
+.intro-en {
+	font-size: 1.5rem;
+	font-weight: 600;
+	margin-left: 1em;
+	margin-bottom: 3rem;
+}
+
+.author-section,
+.info-section {
+	background-color: #050505;
+	color: #d1cccc;
+}
+
+.author-content {
+	max-width: 31rem;
+}
+
+.author-profile {
+	height: 40vh;
+}
+
+.author-front {
+	margin: -3rem 0 0 12rem;
+	height: 40vh;
+}
+
+.author-content h2 {
+	font-size: 1px;
+	color: transparent;
+}
+
+.author-title {
+	font-size: 2rem;
+	font-weight: 600;
+}
+
+.info {
+	background-color: #1b1b1b;
+	padding: 3rem;
+	max-width: var(--max-width);
+	margin: auto;
+	text-align: center;
+}
+
+#map {
+	height: 300px;
+	overflow: hidden;
+}
+
+.info-section h2 {
+	font-size: 3rem;
+	margin: 0 0 1rem 0;
+}
+
+.footer-section {
+	background-color: #121313;
+	width: 100%;
+}
+
+.footer-left {
+	flex: 1;
+}
+
+.socials {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.socials img {
+	width: 24px;
+}
+
+#invitationContent {
+	background: url("img/invitation.webp") center / cover no-repeat;
+	background-attachment: fixed;
+	width: 100%;
+	position: relative;
+	color: #ffffff;
+}
+
+#invitationContent::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0);
+	transition: background-color 1s ease-out;
+}
+
+#invitationContent.active::before,
+#invitationContent:has(+ .active)::before {
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+#invitationContent.fp-completely .invitation-section,
+#invitationContent:has(+ .fp-completely) .invitation-section {
+	filter: opacity(1);
+}
+
+#invitationContent .fp-overflow {
+	position: relative;
+	height: 100%;
+}
+
+#invitationContent h2 {
+	font-size: 3rem;
+}
+
+.invitation-left {
+	max-width: min(45rem, 50vw);
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	flex-shrink: 1;
+}
+
+#message {
+	flex-grow: 1;
+	color: #e7dbdb;
+}
+
+.invitation-subtitle {
+	width: 100%;
+	filter: brightness(0) invert(1);
+}
+
+.invitation-agenda {
+	width: 20rem;
+	margin-bottom: 3rem;
+}
+
+.invitation-section {
+	padding: 6rem 2rem;
+	align-items: stretch;
+	filter: opacity(0);
+	transition: filter 1s ease-out;
+}
+
+.invitation-form {
+	font-size: 2rem;
+}
+
+.invitation-form > label {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+input[type="checkbox"] {
+	display: none;
+}
+.checkbox {
+	width: 1.8rem;
+	height: 1.8rem;
+	border: 2px solid #e7dbdb;
+	cursor: pointer;
+	position: relative;
+}
+
+.checkbox::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 0.6rem;
+	height: 1.2rem;
+	border-right: 2px solid #e7dbdb;
+	border-bottom: 2px solid #e7dbdb;
+	transform: translate(-50%, -60%) rotate(45deg);
+	opacity: 0;
+	transition: opacity 0.2s ease-out;
+}
+
+input[type="checkbox"]:checked + .checkbox::after {
+	opacity: 1;
 }
