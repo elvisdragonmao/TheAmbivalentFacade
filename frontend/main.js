@@ -59,7 +59,6 @@ const loadExistingRSVP = async () => {
 };
 
 // Handle form submission
-const submitBtn = document.getElementById("submitBtn");
 const statusDiv = document.getElementById("submitStatus");
 
 // Function to handle submission
@@ -81,7 +80,6 @@ const submitRSVP = async () => {
 	// Show submitting message
 	statusDiv.textContent = "送出中...";
 	statusDiv.style.color = "#666";
-	if (submitBtn) submitBtn.disabled = true;
 	// Disable checkboxes during submission
 	comeYesCheckbox.disabled = true;
 	comeNoCheckbox.disabled = true;
@@ -121,7 +119,6 @@ const submitRSVP = async () => {
 		comeYesCheckbox.disabled = false;
 		comeNoCheckbox.disabled = false;
 	} finally {
-		if (submitBtn) submitBtn.disabled = false;
 	}
 };
 
@@ -143,11 +140,6 @@ if (comeYesCheckbox && comeNoCheckbox) {
 			submitRSVP();
 		}
 	});
-}
-
-// Keep button for manual submission if needed
-if (submitBtn) {
-	submitBtn.addEventListener("click", submitRSVP);
 }
 
 const loadInvitation = async () => {
