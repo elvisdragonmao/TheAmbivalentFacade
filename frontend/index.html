@@ -53,9 +53,9 @@
 		<!-- Main Content -->
 		<main style="display: none">
 			<div id="fullpage">
-				<div class="section welcome-section fp-auto-height" data-anchor="welcome">
+				<div class="section welcome-section fp-auto-height" data-anchor="welcome" id="welcome-section" style="display: none;">
 					<div class="banner-container">
-						<div id="welcometext">敬邀曾博恩來看我的藝術展</div>
+						<div id="welcometext"></div>
 						<img src="img/banner-arrow.png" alt="" class="banner-arrow" />
 						<a class="no" href="#invite"><img src="img/banner-mail.png" alt="" class="banner-mail" /></a>
 					</div>
@@ -137,22 +137,19 @@
 						<div id="map"></div>
 					</section>
 				</div>
-				<div class="section" data-anchor="invite" id="invitationContent">
+				<div class="section" data-anchor="invite" id="invitationContent" style="display: none;">
 					<section class="center-section invitation-section">
 						<div class="invitation-left">
 							<h2>
 								敬邀
-								<span id="name">曾博恩 先生</span>
+								<span id="name"></span>
 							</h2>
-							<p id="message">
-								你的笑話老實說其實沒有很好笑，但因為你長得挺藝術的所以也邀請你來。 這裡要放點文字測試但我不知道說什麼好尷尬喔（
-								可憐的小貓咪有人因為他貪吃打了他現在他在哭可憐的小貓咪有人因為他貪吃打了他現在他在哭哦，我的小貓咪，喵喵哦，我的小貓咪，喵喵哦，我的小貓咪，喵喵哦，我的小貓咪，喵喵哦，我的小貓咪，喵喵哦，我的小貓咪，喵喵哦，我的小貓咪哦，我的小貓咪喵喵哦，我的小貓咪哦。
-							</p>
+							<p id="message"></p>
 							<img src="img/cover-subtitle.png" alt="桃粉中掘出一攤幸福 半嚮往 半遺棄 黃聿謙個展" class="invitation-subtitle" />
 						</div>
 						<div class="invitation-right">
-							<img src="img/invitation-agenda.png" class="invitation-agenda" alt="3/7（六）畫展前一日私密預展。15:30 開放入場、18:00-19:00 音樂演出、19:30 閉館。現場備有美式漢堡與精選酒飲" />
-							<div class="invitation-form">
+						<img id="invitation-agenda" src="img/invitation-agenda.png" class="invitation-agenda" alt="3/7（六）畫展前一日私密預展。15:30 開放入場、18:00-19:00 音樂演出、19:30 閉館。現場備有美式漢堡與精選酒飲" />
+						<div id="invitation-form" class="invitation-form">
 								<label for="come-yes" class="checkbox-label">
 									<input type="checkbox" id="come-yes" class="form-checkbox" />
 									<div class="checkbox"></div>

@@ -19,8 +19,6 @@ L.Icon.Default.mergeOptions({
 const urlParams = new URLSearchParams(window.location.search);
 const inviteSlug = urlParams.get("invite");
 
-document.getElementById("invitationContent").style.display = "block";
-
 // Checkbox mutual exclusion (radio button behavior)
 const comeYesCheckbox = document.getElementById("come-yes");
 const comeNoCheckbox = document.getElementById("come-no");
@@ -145,9 +143,15 @@ if (comeYesCheckbox && comeNoCheckbox) {
 const loadInvitation = async () => {
 	const loading = document.getElementById("loading");
 	const content = document.querySelector("main");
+	const welcomeSection = document.getElementById("welcome-section");
+	const invitationSection = document.getElementById("invitationContent");
+	const agendaImg = document.getElementById("invitation-agenda");
+	const invitationForm = document.getElementById("invitation-form");
 
 	if (!inviteSlug) {
-		// No invite slug, show default content
+		// No invite slug, hide welcome banner and invitation section
+		if (welcomeSection) welcomeSection.style.display = "none";
+		if (invitationSection) invitationSection.style.display = "none";
 		loading.style.display = "none";
 		content.style.display = "block";
 		return;
@@ -160,18 +164,48 @@ const loadInvitation = async () => {
 			const invitation = await response.json();
 
 			// Update page title
-			document.title = `Invitation for ${invitation.name}`;
+			document.title = `半嬌面 - 敬邀 ${invitation.name}`;
 
-			// Show invitation content
-			document.getElementById("guestName").textContent = `Dear ${invitation.name} (${invitation.pronoun})`;
-			document.getElementById("message").textContent = invitation.message;
-			document.getElementById("invitationContent").style.display = "block";
+			// Show and update welcome section
+			if (welcomeSection) welcomeSection.style.display = "block";
+			const welcomeText = document.getElementById("welcometext");
+			if (welcomeText) {
+				welcomeText.textContent = `敬邀${invitation.name}來看我的藝術展`;
+			}
+
+			// Show invitation section
+			if (invitationSection) invitationSection.style.display = "block";
+
+			// Update invitation section
+			const nameElement = document.getElementById("name");
+			if (nameElement) {
+				nameElement.textContent = `${invitation.name} ${invitation.pronoun}`;
+			}
+
+			const messageElement = document.getElementById("message");
+			if (messageElement) {
+				messageElement.textContent = invitation.message;
+			}
+
+			// Show/hide party elements based on invited_to_party
+			if (invitation.invited_to_party) {
+				if (agendaImg) agendaImg.style.display = "block";
+				if (invitationForm) invitationForm.style.display = "block";
+			} else {
+				if (agendaImg) agendaImg.style.display = "none";
+				if (invitationForm) invitationForm.style.display = "none";
+			}
 		} else {
-			// Invitation not found, show default
+			// Invitation not found, hide sections
 			console.log("Invitation not found");
+			if (welcomeSection) welcomeSection.style.display = "none";
+			if (invitationSection) invitationSection.style.display = "none";
 		}
 	} catch (error) {
 		console.error("Error loading invitation:", error);
+		// On error, hide sections
+		if (welcomeSection) welcomeSection.style.display = "none";
+		if (invitationSection) invitationSection.style.display = "none";
 	} finally {
 		loading.style.display = "none";
 		content.style.display = "block";
