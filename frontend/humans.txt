@@ -1,0 +1,28 @@
+/* TEAM */
+Artist & Creator: 黃聿謙 (miaomiaonj)
+Instagram: @miaomiaonj
+Location: Taipei, Taiwan
+
+Web Developer: EM
+Site: https://elvismao.com/zh-Hant
+Location: Taipei, Taiwan
+
+/* SITE */
+Title: 半嬌面 The Ambivalent Facade
+Language: Traditional Chinese (zh-TW)
+Standards: HTML5, CSS3, JavaScript ES6+
+Components: fullPage.js, Adobe Typekit
+Last update: 2026/02/07
+
+/* EXHIBITION */
+Name: 半嬌面 The Ambivalent Facade
+Subtitle: 桃粉中掘出一攤幸福 半嚮往 半遺棄
+Date: 2026.03.08 - 2026.03.22
+Location: 誠空間, Taipei
+Type: Solo Exhibition
+Medium: Painting, Mixed Media, Video Art
+Theme: The ambivalent essence of adolescence
+
+/* THANKS */
+Special thanks to all supporters and visitors of this exhibition.
+感謝所有支持與參與本展覽的朋友們。
