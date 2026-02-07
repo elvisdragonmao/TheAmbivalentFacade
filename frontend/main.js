@@ -184,7 +184,7 @@ const loadInvitation = async () => {
 			if (welcomeSection) welcomeSection.style.display = "block";
 			const welcomeText = document.getElementById("welcometext");
 			if (welcomeText) {
-				welcomeText.textContent = `敬邀${invitation.name}來看我的藝術展`;
+				welcomeText.textContent = `敬邀${invitation.name}來看我的藝術展（請點擊右側按鈕）`;
 			}
 
 			// Show invitation section
@@ -234,6 +234,8 @@ const init = async () => {
 	// Play background music
 	const bgMusic = document.getElementById("bgMusic");
 	if (bgMusic) {
+		// Set volume to 80%
+		bgMusic.volume = 0.8;
 		// Try to play music (may be blocked by browser autoplay policy)
 		bgMusic.play().catch(error => {
 			console.log("Autoplay was prevented. Music will play on user interaction.");
