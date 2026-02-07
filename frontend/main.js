@@ -62,59 +62,92 @@ const loadExistingRSVP = async () => {
 const submitBtn = document.getElementById("submitBtn");
 const statusDiv = document.getElementById("submitStatus");
 
-if (submitBtn) {
-	submitBtn.addEventListener("click", async function () {
-		if (!inviteSlug) {
-			statusDiv.textContent = "無效的邀請連結";
-			statusDiv.style.color = "#ff4444";
-			return;
-		}
+// Function to handle submission
+const submitRSVP = async () => {
+	if (!inviteSlug) {
+		statusDiv.textContent = "無效的邀請連結";
+		statusDiv.style.color = "#ff4444";
+		return;
+	}
 
-		const response = comeYesCheckbox.checked ? "yes" : comeNoCheckbox.checked ? "no" : null;
+	const response = comeYesCheckbox.checked ? "yes" : comeNoCheckbox.checked ? "no" : null;
 
-		if (!response) {
-			statusDiv.textContent = "請選擇一個選項";
-			statusDiv.style.color = "#ff4444";
-			return;
-		}
+	if (!response) {
+		statusDiv.textContent = "請選擇一個選項";
+		statusDiv.style.color = "#ff4444";
+		return;
+	}
 
-		// Show submitting message
-		statusDiv.textContent = "送出中...";
-		statusDiv.style.color = "#666";
-		submitBtn.disabled = true;
+	// Show submitting message
+	statusDiv.textContent = "送出中...";
+	statusDiv.style.color = "#666";
+	if (submitBtn) submitBtn.disabled = true;
+	// Disable checkboxes during submission
+	comeYesCheckbox.disabled = true;
+	comeNoCheckbox.disabled = true;
 
-		try {
-			const submitResponse = await fetch("/api/rsvp", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({
-					slug: inviteSlug,
-					response: response
-				})
-			});
+	try {
+		const submitResponse = await fetch("/api/rsvp", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				slug: inviteSlug,
+				response: response
+			})
+		});
 
-			if (submitResponse.ok) {
-				// Show success message based on response
-				if (response === "yes") {
-					statusDiv.textContent = "期待當天與您相遇";
-					statusDiv.style.color = "#4CAF50";
-				} else {
-					statusDiv.textContent = "真可惜 展期若有空都歡迎前來觀展";
-					statusDiv.style.color = "#ff69b4";
-				}
+		if (submitResponse.ok) {
+			// Show success message based on response
+			if (response === "yes") {
+				statusDiv.textContent = "期待當天與您相遇";
+				statusDiv.style.color = "#4CAF50";
 			} else {
-				statusDiv.textContent = "送出失敗，請稍後再試";
-				statusDiv.style.color = "#ff4444";
+				statusDiv.textContent = "真可惜 展期若有空都歡迎前來觀展";
+				statusDiv.style.color = "#ff69b4";
 			}
-		} catch (error) {
+		} else {
 			statusDiv.textContent = "送出失敗，請稍後再試";
 			statusDiv.style.color = "#ff4444";
-		} finally {
-			submitBtn.disabled = false;
+			// Re-enable checkboxes on error
+			comeYesCheckbox.disabled = false;
+			comeNoCheckbox.disabled = false;
+		}
+	} catch (error) {
+		statusDiv.textContent = "送出失敗，請稍後再試";
+		statusDiv.style.color = "#ff4444";
+		// Re-enable checkboxes on error
+		comeYesCheckbox.disabled = false;
+		comeNoCheckbox.disabled = false;
+	} finally {
+		if (submitBtn) submitBtn.disabled = false;
+	}
+};
+
+// Auto-submit when checkbox changes
+if (comeYesCheckbox && comeNoCheckbox) {
+	comeYesCheckbox.removeEventListener("change", comeYesCheckbox._changeHandler);
+	comeNoCheckbox.removeEventListener("change", comeNoCheckbox._changeHandler);
+	
+	comeYesCheckbox.addEventListener("change", function () {
+		if (this.checked) {
+			comeNoCheckbox.checked = false;
+			submitRSVP();
 		}
 	});
+
+	comeNoCheckbox.addEventListener("change", function () {
+		if (this.checked) {
+			comeYesCheckbox.checked = false;
+			submitRSVP();
+		}
+	});
+}
+
+// Keep button for manual submission if needed
+if (submitBtn) {
+	submitBtn.addEventListener("click", submitRSVP);
 }
 
 const loadInvitation = async () => {
