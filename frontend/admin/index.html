@@ -363,15 +363,18 @@
 			const renderRSVPs = rsvps => {
 				const container = document.getElementById("rsvpList");
 
-				if (rsvps.length === 0) {
-					container.innerHTML = '<p class="no-invitations">尚無回覆</p>';
-					return;
-				}
+			// Filter out unknown names
+			const filteredRsvps = rsvps.filter(rsvp => rsvp.invitation_name && rsvp.invitation_name !== "未知");
 
-				container.innerHTML = rsvps
-					.map(rsvp => {
-						const responseText = rsvp.response === "yes" ? '<span style="color: #4CAF50; font-weight: bold;">✓ 將出席</span>' : '<span style="color: #ff69b4; font-weight: bold;">✗ 無法前來</span>';
-						const invitationName = rsvp.invitation_name || "未知";
+			if (filteredRsvps.length === 0) {
+				container.innerHTML = '<p class="no-invitations">尚無回覆</p>';
+				return;
+			}
+
+			container.innerHTML = filteredRsvps
+				.map(rsvp => {
+					const responseText = rsvp.response === "yes" ? '<span style="color: #4CAF50; font-weight: bold;">✓ 將出席</span>' : '<span style="color: #ff69b4; font-weight: bold;">✗ 無法前來</span>';
+					const invitationName = rsvp.invitation_name;
 						const pronoun = rsvp.invitation_pronoun ? ` (${rsvp.invitation_pronoun})` : "";
 						return `
 						<div class="invitation-item">
@@ -398,16 +401,19 @@
 			};
 
 			const exportRSVPs = () => {
-				if (currentRSVPs.length === 0) {
-					alert("無回覆可匯出");
-					return;
-				}
+			// Filter out unknown names
+			const filteredRsvps = currentRSVPs.filter(rsvp => rsvp.invitation_name && rsvp.invitation_name !== "未知");
 
-				// Create CSV content
-				const csvRows = [["名稱", "代名詞", "Slug", "回覆", "回覆時間"].join(",")];
+			if (filteredRsvps.length === 0) {
+				alert("無回覆可匯出");
+				return;
+			}
 
-				currentRSVPs.forEach(rsvp => {
-					const name = rsvp.invitation_name || "未知";
+			// Create CSV content
+			const csvRows = [["名稱", "代名詞", "Slug", "回覆", "回覆時間"].join(",")];
+
+			filteredRsvps.forEach(rsvp => {
+				const name = rsvp.invitation_name;
 					const pronoun = rsvp.invitation_pronoun || "";
 					const response = rsvp.response === "yes" ? "將出席" : "無法前來";
 					const time = new Date(rsvp.updated_at).toLocaleString("zh-TW");
