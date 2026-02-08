@@ -2,11 +2,12 @@ import fullpage from "fullpage.js/dist/fullpage.extensions.min.js";
 import "fullpage.js/dist/fullpage.min.css";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "./index.css";
 
-// Fix Leaflet default icon paths issue with bundlers
 import iconRetina from "leaflet/dist/images/marker-icon-2x.png";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import { playReveal, resetReveal } from "./textReveal";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -15,7 +16,6 @@ L.Icon.Default.mergeOptions({
 	shadowUrl: iconShadow
 });
 
-// Get invite parameter from URL
 const urlParams = new URLSearchParams(window.location.search);
 const inviteSlug = urlParams.get("invite");
 
@@ -37,7 +37,6 @@ if (comeYesCheckbox && comeNoCheckbox) {
 	});
 }
 
-// Load existing RSVP if available
 const loadExistingRSVP = async () => {
 	if (!inviteSlug) return;
 
@@ -66,10 +65,7 @@ const loadExistingRSVP = async () => {
 	}
 };
 
-// Handle form submission
 const statusDiv = document.getElementById("submitStatus");
-
-// Function to handle submission
 const submitRSVP = async () => {
 	if (!inviteSlug) {
 		statusDiv.textContent = "無效的邀請連結";
@@ -85,10 +81,8 @@ const submitRSVP = async () => {
 		return;
 	}
 
-	// Show submitting message
 	statusDiv.textContent = "送出中...";
 	statusDiv.style.color = "#666";
-	// Disable checkboxes during submission
 	comeYesCheckbox.disabled = true;
 	comeNoCheckbox.disabled = true;
 
@@ -105,7 +99,6 @@ const submitRSVP = async () => {
 		});
 
 		if (submitResponse.ok) {
-			// Show success message based on response
 			if (response === "yes") {
 				statusDiv.textContent = "期待當天與您相遇 · 可隨時修改回覆";
 				statusDiv.style.color = "#4CAF50";
@@ -113,7 +106,6 @@ const submitRSVP = async () => {
 				statusDiv.textContent = "真可惜 展期若有空都歡迎前來觀展 · 可隨時修改回覆";
 				statusDiv.style.color = "#ff69b4";
 			}
-			// Re-enable checkboxes after successful submission
 			setTimeout(() => {
 				comeYesCheckbox.disabled = false;
 				comeNoCheckbox.disabled = false;
@@ -121,20 +113,17 @@ const submitRSVP = async () => {
 		} else {
 			statusDiv.textContent = "送出失敗，請稍後再試";
 			statusDiv.style.color = "#ff4444";
-			// Re-enable checkboxes on error
 			comeYesCheckbox.disabled = false;
 			comeNoCheckbox.disabled = false;
 		}
 	} catch (error) {
 		statusDiv.textContent = "送出失敗，請稍後再試";
 		statusDiv.style.color = "#ff4444";
-		// Re-enable checkboxes on error
 		comeYesCheckbox.disabled = false;
 		comeNoCheckbox.disabled = false;
 	}
 };
 
-// Auto-submit when checkbox changes
 if (comeYesCheckbox && comeNoCheckbox) {
 	comeYesCheckbox.removeEventListener("change", comeYesCheckbox._changeHandler);
 	comeNoCheckbox.removeEventListener("change", comeNoCheckbox._changeHandler);
@@ -163,7 +152,6 @@ const loadInvitation = async () => {
 	const invitationForm = document.getElementById("invitation-form");
 
 	if (!inviteSlug) {
-		// No invite slug, hide welcome banner and invitation section
 		if (welcomeSection) welcomeSection.style.display = "none";
 		if (invitationSection) invitationSection.style.display = "none";
 		loading.style.display = "none";
@@ -176,21 +164,16 @@ const loadInvitation = async () => {
 
 		if (response.ok) {
 			const invitation = await response.json();
-
-			// Update page title
 			document.title = `半嬌面 - 敬邀 ${invitation.name}`;
 
-			// Show and update welcome section
 			if (welcomeSection) welcomeSection.style.display = "block";
 			const welcomeText = document.getElementById("welcometext");
 			if (welcomeText) {
 				welcomeText.textContent = `敬邀${invitation.name}來看我的藝術展（請點擊右側按鈕）`;
 			}
 
-			// Show invitation section
 			if (invitationSection) invitationSection.style.display = "block";
 
-			// Update invitation section
 			const nameElement = document.getElementById("name");
 			if (nameElement) {
 				nameElement.textContent = `${invitation.name} ${invitation.pronoun}`;
@@ -198,11 +181,9 @@ const loadInvitation = async () => {
 
 			const messageElement = document.getElementById("message");
 			if (messageElement) {
-				// Preserve line breaks in message
 				messageElement.textContent = invitation.message;
 			}
 
-			// Show/hide party elements based on inviteToParty
 			if (invitation.inviteToParty) {
 				if (agendaImg) agendaImg.style.display = "block";
 				if (invitationForm) invitationForm.style.display = "block";
@@ -211,14 +192,12 @@ const loadInvitation = async () => {
 				if (invitationForm) invitationForm.style.display = "none";
 			}
 		} else {
-			// Invitation not found, hide sections
 			console.log("Invitation not found");
 			if (welcomeSection) welcomeSection.style.display = "none";
 			if (invitationSection) invitationSection.style.display = "none";
 		}
 	} catch (error) {
 		console.error("Error loading invitation:", error);
-		// On error, hide sections
 		if (welcomeSection) welcomeSection.style.display = "none";
 		if (invitationSection) invitationSection.style.display = "none";
 	} finally {
@@ -231,7 +210,6 @@ const init = async () => {
 	await loadInvitation();
 	await loadExistingRSVP();
 
-	// Play background music
 	const bgMusic = document.getElementById("bgMusic");
 	if (bgMusic) {
 		// Set volume to 80%
@@ -250,6 +228,20 @@ const init = async () => {
 		});
 	}
 
+	const TITLE_OPTS = {
+		duration: 1.2,
+		skew: 7,
+		stagger: 0.3,
+		ease: "power4.out"
+	};
+
+	const PARAGRAPH_OPTS = {
+		duration: 1,
+		skew: 5,
+		stagger: 0.25,
+		ease: "power3.out"
+	};
+
 	new fullpage("#fullpage", {
 		anchors: ["cover", "intro", "miao", "info", "invite", "footer"],
 		licenseKey: "O46NH-O2JJ9-B3K9J-4C9JK-XSZZO",
@@ -263,24 +255,42 @@ const init = async () => {
 			enabled: false
 		},
 		css3: false,
-		scrollingSpeed: 1000
+		scrollingSpeed: 1000,
+		afterRender() {
+			const section = document.querySelector(".section.active");
+			if (!section) return;
+
+			section.querySelectorAll(".text-reveal-title").forEach(el => playReveal(el, TITLE_OPTS));
+
+			section.querySelectorAll(".text-reveal-paragraph").forEach(el => playReveal(el, PARAGRAPH_OPTS));
+		},
+
+		afterLoad(origin, destination) {
+			const section = destination.item;
+
+			section.querySelectorAll(".text-reveal-title").forEach(el => playReveal(el, TITLE_OPTS));
+
+			section.querySelectorAll(".text-reveal-paragraph").forEach(el => playReveal(el, PARAGRAPH_OPTS));
+		},
+
+		onLeave(origin) {
+			const section = origin.item;
+
+			section.querySelectorAll(".text-reveal-title").forEach(el => resetReveal(el, TITLE_OPTS));
+
+			section.querySelectorAll(".text-reveal-paragraph").forEach(el => resetReveal(el, PARAGRAPH_OPTS));
+		}
 	});
 
-	// Map initialization
 	const lat = 25.0577752;
 	const lng = 121.5459258;
 
 	const map = L.map("map").setView([lat, lng], 16);
 
-	// 黑白底圖（CartoDB / OpenStreetMap）
 	L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
 		maxZoom: 200
 	}).addTo(map);
-
-	// Marker
 	L.marker([lat, lng]).addTo(map).bindPopup("台北市民生東路三段 113 巷 7 弄 10 號 B1").openPopup();
-
-	// 3D tilt effect for intro-poster
 	const introPoster = document.querySelector(".intro-poster");
 	if (introPoster) {
 		document.addEventListener("mousemove", e => {
@@ -305,7 +315,6 @@ const init = async () => {
 		});
 	}
 
-	// Share button functionality
 	const shareBtn = document.getElementById("shareBtn");
 	if (shareBtn) {
 		shareBtn.addEventListener("click", async () => {

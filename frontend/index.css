@@ -673,3 +673,33 @@ footer {
 		padding: 3rem 2rem 1rem;
 	}
 }
+
+/* text */
+
+.text-reveal-wrapper,
+.text-reveal-line {
+	overflow: hidden;
+}
+
+.text-reveal-content {
+	display: inline-block;
+	transform: translateY(100%);
+	opacity: 0;
+	will-change: transform, opacity;
+}
+
+.spacer {
+	height: 80vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.text-reveal-content {
+		transform: none !important;
+		opacity: 1 !important;
+	}
+
+	.cover-layer2,
+	.banner-arrow {
+		animation: none !important;
+	}
+}
