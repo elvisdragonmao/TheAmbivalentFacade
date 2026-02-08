@@ -391,9 +391,11 @@
 
 			const updateRSVPStats = () => {
 				const totalInvitations = currentInvitations.length;
-				const yesResponses = currentRSVPs.filter(r => r.response === "yes").length;
-				const noResponses = currentRSVPs.filter(r => r.response === "no").length;
-				const noResponse = totalInvitations - currentRSVPs.length;
+				// Filter out unknown names before counting
+				const filteredRsvps = currentRSVPs.filter(rsvp => rsvp.invitation_name && rsvp.invitation_name !== "未知");
+				const yesResponses = filteredRsvps.filter(r => r.response === "yes").length;
+				const noResponses = filteredRsvps.filter(r => r.response === "no").length;
+				const noResponse = totalInvitations - filteredRsvps.length;
 
 				document.getElementById("yesCount").textContent = yesResponses;
 				document.getElementById("noCount").textContent = noResponses;
