@@ -243,11 +243,19 @@ const backupDatabase = () => {
 // Schedule daily backup at midnight
 cron.schedule("0 0 * * *", () => {
 	console.log("Running scheduled database backup...");
-	backupDatabase();
+	try {
+		backupDatabase();
+	} catch (err) {
+		console.error("Scheduled backup failed:", err);
+	}
 });
 
 // Run an initial backup on server start
 console.log("Initializing database backup system...");
-backupDatabase().catch(err => console.error("Initial backup failed:", err));
+try {
+	backupDatabase();
+} catch (err) {
+	console.error("Initial backup failed:", err);
+}
 
 module.exports = { db, invitationDb, rsvpDb, backupDatabase };
