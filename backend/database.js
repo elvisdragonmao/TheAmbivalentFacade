@@ -1,6 +1,7 @@
 const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
+const cron = require("node-cron");
 
 const dataDir = path.join(__dirname, "../data");
 const dbPath = path.join(dataDir, "invitations.db");
@@ -206,4 +207,47 @@ const rsvpDb = {
 	}
 };
 
-module.exports = { db, invitationDb, rsvpDb };
+// Backup functionality
+const backupDatabase = () => {
+	try {
+		const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+		const backupPath = path.join(dataDir, `invitations-backup-${timestamp}.db`);
+		
+		// Create a backup by copying the database file
+		fs.copyFileSync(dbPath, backupPath);
+		
+		console.log(`Database backup created: ${backupPath}`);
+		
+		// Optional: Keep only last 30 backups to save space
+		const backupFiles = fs.readdirSync(dataDir)
+			.filter(file => file.startsWith("invitations-backup-") && file.endsWith(".db"))
+			.sort()
+			.reverse();
+		
+		// Delete old backups, keep the most recent 30
+		if (backupFiles.length > 30) {
+			backupFiles.slice(30).forEach(file => {
+				const filePath = path.join(dataDir, file);
+				fs.unlinkSync(filePath);
+				console.log(`Deleted old backup: ${file}`);
+			});
+		}
+		
+		return backupPath;
+	} catch (error) {
+		console.error("Backup failed:", error);
+		throw error;
+	}
+};
+
+// Schedule daily backup at midnight
+cron.schedule("0 0 * * *", () => {
+	console.log("Running scheduled database backup...");
+	backupDatabase();
+});
+
+// Run an initial backup on server start
+console.log("Initializing database backup system...");
+backupDatabase().catch(err => console.error("Initial backup failed:", err));
+
+module.exports = { db, invitationDb, rsvpDb, backupDatabase };
