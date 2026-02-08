@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>404 - 迷路了 | 半嬌面 The Ambivalent Facade</title>
+		<link rel="icon" type="image/png" href="/img/favicon/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/img/favicon/favicon.svg" />
+		<link rel="shortcut icon" href="/img/favicon/favicon.ico" />
+		<style>
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				font-family: "hiragino-mincho-pron", -apple-system, BlinkMacSystemFont, "Segoe UI", serif;
+				font-weight: 300;
+				background: linear-gradient(180deg, #361512 0%, #050505 50%, #030504 100%);
+				color: #eae0e0;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				padding: 2rem;
+				overflow: hidden;
+				position: relative;
+			}
+
+			.container {
+				text-align: center;
+				max-width: 600px;
+				position: relative;
+				z-index: 2;
+				animation: fadeIn 1.5s ease-out;
+			}
+
+			@keyframes fadeIn {
+				from {
+					opacity: 0;
+					transform: translateY(20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			.error-code {
+				font-size: clamp(5rem, 15vw, 10rem);
+				font-weight: 600;
+				color: #d497bd;
+				line-height: 1;
+				margin-bottom: 1rem;
+				text-shadow: 0 0 30px rgba(212, 151, 189, 0.3);
+			}
+
+			.error-title {
+				font-size: clamp(1.8rem, 5vw, 2.5rem);
+				margin-bottom: 1.5rem;
+				color: #c492b4;
+			}
+
+			.error-subtitle {
+				font-size: clamp(1rem, 3vw, 1.3rem);
+				margin-bottom: 0.5rem;
+				color: #c492b4;
+				font-weight: 400;
+			}
+
+			.error-message {
+				font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+				line-height: 1.8;
+				margin-bottom: 3rem;
+				color: #a0a0a0;
+			}
+
+			.home-link {
+				display: inline-block;
+				color: #eae0e0;
+				text-decoration: none;
+				padding: 1rem 3rem;
+				border: 1px solid #d497bd;
+				background: rgba(212, 151, 189, 0.1);
+				transition: all 0.3s ease;
+				font-size: 1.1rem;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.home-link::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: -100%;
+				width: 100%;
+				height: 100%;
+				background: rgba(212, 151, 189, 0.2);
+				transition: left 0.3s ease;
+			}
+
+			.home-link:hover::before {
+				left: 0;
+			}
+
+			.home-link:hover {
+				border-color: #c492b4;
+				box-shadow: 0 0 20px rgba(212, 151, 189, 0.3);
+				transform: translateY(-2px);
+			}
+
+			.home-link span {
+				position: relative;
+				z-index: 1;
+			}
+
+			.decoration {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				z-index: 1;
+				opacity: 0.15;
+				pointer-events: none;
+			}
+
+			.decoration::before {
+				content: "半";
+				position: absolute;
+				font-size: 30vw;
+				color: #d497bd;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%) rotate(-15deg);
+				opacity: 0.05;
+			}
+
+			@media (max-width: 600px) {
+				.error-message {
+					margin-bottom: 2rem;
+				}
+
+				.home-link {
+					padding: 0.8rem 2rem;
+					font-size: 1rem;
+				}
+			}
+		</style>
+		<script>
+			(function (d) {
+				var config = {
+						kitId: "dlr3xfd",
+						scriptTimeout: 3000,
+						async: true
+					},
+					h = d.documentElement,
+					t = setTimeout(function () {
+						h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+					}, config.scriptTimeout),
+					tk = d.createElement("script"),
+					f = false,
+					s = d.getElementsByTagName("script")[0],
+					a;
+				h.className += " wf-loading";
+				tk.src = "https://use.typekit.net/" + config.kitId + ".js";
+				tk.async = true;
+				tk.onload = tk.onreadystatechange = function () {
+					a = this.readyState;
+					if (f || (a && a != "complete" && a != "loaded")) return;
+					f = true;
+					clearTimeout(t);
+					try {
+						Typekit.load(config);
+					} catch (e) {}
+				};
+				s.parentNode.insertBefore(tk, s);
+			})(document);
+		</script>
+	</head>
+	<body>
+		<div class="decoration"></div>
+		<div class="container">
+			<div class="error-code">404</div>
+			<h1 class="error-title">迷路了</h1>
+			<p class="error-subtitle">Lost in the Facade</p>
+			<p class="error-message">
+				在這混沌的「半」面相中，你尋找的頁面似乎也在擺盪之間消失了。<br />
+				或許，它正處於「一知半解」的中介狀態。
+			</p>
+			<a href="/" class="home-link">
+				<span>回到展覽首頁</span>
+			</a>
+		</div>
+	</body>
+</html>

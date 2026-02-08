@@ -11,7 +11,8 @@ export default defineConfig({
 			input: {
 				main: resolve(__dirname, "frontend/index.html"),
 				admin: resolve(__dirname, "frontend/admin/index.html"),
-				login: resolve(__dirname, "frontend/login/index.html")
+				login: resolve(__dirname, "frontend/login/index.html"),
+				notfound: resolve(__dirname, "frontend/404.html")
 			}
 		}
 	},

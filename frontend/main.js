@@ -251,7 +251,7 @@ const init = async () => {
 	}
 
 	new fullpage("#fullpage", {
-		anchors: ["cover", "intro", "author", "info", "invite", "footer"],
+		anchors: ["cover", "intro", "miao", "info", "invite", "footer"],
 		licenseKey: "O46NH-O2JJ9-B3K9J-4C9JK-XSZZO",
 		scrollHorizontallyKey: "14F2D5AA-58024B8B-8AA10EE2-B714B3F4",
 		autoScrolling: true,

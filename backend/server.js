@@ -139,6 +139,11 @@ fastify.get("/api/rsvps", { preHandler: requireAuth }, async (request, reply) =>
 	return reply.send(rsvps);
 });
 
+fastify.setNotFoundHandler((request, reply) => {
+	if (request.url.startsWith("/api/")) return reply.code(404).send({ error: "API endpoint not found" });
+	return reply.code(404).type("text/html").sendFile("404.html");
+});
+
 const start = async () => {
 	try {
 		const port = process.env.PORT || 3000;
