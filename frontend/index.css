@@ -673,3 +673,16 @@ footer {
 		padding: 3rem 2rem 1rem;
 	}
 }
+
+.reveal {
+	opacity: 0;
+	transform: translateY(3rem);
+	transition:
+		opacity 1.3s ease-out,
+		transform 1.3s ease-out;
+}
+
+.active.section .reveal {
+	opacity: 1;
+	transform: translateY(0);
+}

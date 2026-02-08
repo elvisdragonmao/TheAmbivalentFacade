@@ -62,7 +62,7 @@ const generateSlug = () => {
 };
 
 // Helper function to convert inviteToParty to boolean
-const convertInvitation = (inv) => {
+const convertInvitation = inv => {
 	if (!inv) return null;
 	return {
 		...inv,
@@ -70,7 +70,7 @@ const convertInvitation = (inv) => {
 	};
 };
 
-const convertInvitations = (invitations) => {
+const convertInvitations = invitations => {
 	return invitations.map(convertInvitation);
 };
 
