@@ -575,6 +575,10 @@ footer {
 	display: none;
 }
 
+.miao {
+	display: none;
+}
+
 @media (max-aspect-ratio: 590 / 837) {
 	.cover-img {
 		height: unset;
